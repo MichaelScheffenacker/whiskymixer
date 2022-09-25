@@ -6,28 +6,34 @@ const port = 8501;
 
 // server.use(express.static('static'));
 
-server.listen(port, () => console.log(`listening on port ${port}`));
+let mixerData = {
+    available_ingredients: ['<nothing>']
+}
 
-server.get('/', (req, res) => {
-
-    https.get('https://cocktails.deno.dev/available-ingredients', res2 => {
+let fetch_available_ingredients = function() {
+    https.get('https://cocktails.deno.dev/available-ingredients', res => {
         let body = '';
-        res2.on('data', (chunk) => {
+        res.on('data', (chunk) => {
             body += chunk;
         });
 
-        res2.on('end', () => {
+        res.on('end', () => {
             try {
-                let json = JSON.parse(body);
-                res.send(json);
-            } catch (e) {
-                res.send("adsf");
-                console.error(e.message);
+                mixerData.available_ingredients = JSON.parse(body);
+            } catch (error) {
+                console.error(error.message);
+                mixerData.available_ingredients = '<nothing>';
             }
         });
 
     }).on('error', (error) => {
         console.error(error.message);
     });
-});
+};
+fetch_available_ingredients();
 
+server.listen(port, () => console.log(`listening on port ${port}`));
+
+server.get('/', (req, res) => {
+    res.send(mixerData.available_ingredients);
+});
