@@ -1,5 +1,5 @@
 const settings = require('./settings');
-const https = require('https');
+const dataAccess = require('./dataAccess');
 const express = require('express');
 const server = express();
 
@@ -11,27 +11,18 @@ let mixerData = {
     availableIngredients: ['<nothing>']
 }
 
-let fetchMixerData = function(fetchPath) {
-    https.get(fetchPath, res => {
-        let body = '';
-        res.on('data', (chunk) => {
-            body += chunk;
-        });
 
-        res.on('end', () => {
-            try {
-                mixerData.availableIngredients = JSON.parse(body);
-            } catch (error) {
-                console.error(error.message);
-                mixerData.availableIngredients = '<nothing>';
-            }
-        });
 
-    }).on('error', (error) => {
-        console.error(error.message);
-    });
-};
-fetchMixerData(settings.fetchPaths.availableIngredients);
+async function fetchAvailableIngredients() {
+    try {
+        mixerData.availableIngredients = await dataAccess.fetchMixerData(settings.fetchPaths.availableIngredients);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+fetchAvailableIngredients();
+
 
 server.listen(port, () => console.log(`listening on port ${port}`));
 
