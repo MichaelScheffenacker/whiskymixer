@@ -1,17 +1,18 @@
+const settings = require('./settings');
 const https = require('https');
 const express = require('express');
 const server = express();
 
-const port = 8501;
+const port = settings.port;
 
 // server.use(express.static('static'));
 
 let mixerData = {
-    available_ingredients: ['<nothing>']
+    availableIngredients: ['<nothing>']
 }
 
-let fetch_available_ingredients = function() {
-    https.get('https://cocktails.deno.dev/available-ingredients', res => {
+let fetchMixerData = function(fetchPath) {
+    https.get(fetchPath, res => {
         let body = '';
         res.on('data', (chunk) => {
             body += chunk;
@@ -19,10 +20,10 @@ let fetch_available_ingredients = function() {
 
         res.on('end', () => {
             try {
-                mixerData.available_ingredients = JSON.parse(body);
+                mixerData.availableIngredients = JSON.parse(body);
             } catch (error) {
                 console.error(error.message);
-                mixerData.available_ingredients = '<nothing>';
+                mixerData.availableIngredients = '<nothing>';
             }
         });
 
@@ -30,10 +31,10 @@ let fetch_available_ingredients = function() {
         console.error(error.message);
     });
 };
-fetch_available_ingredients();
+fetchMixerData(settings.fetchPaths.availableIngredients);
 
 server.listen(port, () => console.log(`listening on port ${port}`));
 
 server.get('/', (req, res) => {
-    res.send(mixerData.available_ingredients);
+    res.send(mixerData.availableIngredients);
 });
