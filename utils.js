@@ -24,12 +24,8 @@ module.exports = {
         });
         return cocktailSubset;
     },
-    filterAvailableCocktails: function (availableIngredients, cocktailLookup) {
-        let cocktailSubset = [];
-        availableIngredients.forEach(ingredient => {
-            let section = cocktailLookup[ingredient] ?? [];
-            cocktailSubset = cocktailSubset.concat(section);
-        });
+    filterAvailableCocktails: (availableIngredients, cocktailLookup) => {
+        let cocktailSubset = module.exports.groupCocktailCandidates(availableIngredients, cocktailLookup);
         let availableCocktails = cocktailSubset.filter(cocktail =>
             cocktail.ingredients.every(ingredient => availableIngredients.includes(ingredient))
         )
