@@ -11,6 +11,7 @@ const port = settings.port;
 let availableIngredients;
 let allIngredients;
 let cocktailLookup;
+let cocktails;
 
 async function fetchAvailableIngredients() {
     try {
@@ -30,7 +31,7 @@ async function fetchAllIngredients() {
 
 async function fetchCocktails() {
     try {
-        let cocktails = await dataAccess.fetchMixerData(settings.fetchPaths.cocktails);
+        cocktails = await dataAccess.fetchMixerData(settings.fetchPaths.cocktails);
         cocktailLookup = mapIngredientToCocktail(cocktails);
     } catch (error) {
         console.error(error);
@@ -63,6 +64,13 @@ server.get('/dingdong/:ingredient', (req, res) => {
     res.send( {
         availableIngredients: extendedIngredients,
         availableCocktails: filterAvailableCocktails(extendedIngredients, cocktailLookup)
+    });
+});
+
+server.get('/askfriend', (req, res) => {
+    fetchCocktails();
+    res.send( {
+        cocktails: cocktails
     });
 });
 
