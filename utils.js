@@ -1,13 +1,17 @@
 module.exports = {
     mapIngredientToCocktail: function (cocktails) {
         let lookup = {};
+        let uniquenessGuard = new Set;
         cocktails.forEach(
             cocktail => {
-                let indexIngredient = cocktail.ingredients[0];
-                if (!Array.isArray(lookup[indexIngredient])) {
-                    lookup[indexIngredient] = []
+                if (!uniquenessGuard.has(cocktail.key)) {
+                    uniquenessGuard.add(cocktail.key);
+                    let indexIngredient = cocktail.ingredients[0];
+                    if (!Array.isArray(lookup[indexIngredient])) {
+                        lookup[indexIngredient] = []
+                    }
+                    lookup[indexIngredient].push(cocktail);
                 }
-                lookup[indexIngredient].push(cocktail)
             }
         );
         return lookup;
