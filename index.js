@@ -8,10 +8,10 @@ const port = settings.port;
 
 // server.use(express.static('static'));
 
-let availableIngredients;
-let allIngredients;
-let cocktailLookup;
-let cocktails;
+let availableIngredients = [];
+let allIngredients = [];
+let cocktailLookup = [];
+let cocktails = [];
 
 async function fetchAvailableIngredients() {
     try {
@@ -29,10 +29,11 @@ async function fetchAllIngredients() {
     }
 }
 
-async function fetchCocktails() {
+async function fetchCocktails(callback) {
     try {
         cocktails = await dataAccess.fetchMixerData(settings.fetchPaths.cocktails);
         cocktailLookup = mapIngredientToCocktail(cocktails);
+        callback();
     } catch (error) {
         console.error(error);
     }
@@ -40,7 +41,7 @@ async function fetchCocktails() {
 
 fetchAvailableIngredients();
 fetchAllIngredients();
-fetchCocktails();
+fetchCocktails(() => {});
 
 
 server.listen(port, () => console.log(`listening on port ${port}`));
@@ -68,10 +69,12 @@ server.get('/dingdong/:ingredient', (req, res) => {
 });
 
 server.get('/askfriend', (req, res) => {
-    fetchCocktails();
-    res.send( {
-        cocktails: cocktails
-    });
+    fetchCocktails(() =>
+        res.send( {
+            cocktails: cocktails
+        })
+    );
+
 });
 
 server.get('*', function(req, res){
