@@ -45,13 +45,15 @@ fetchCocktails();
 server.listen(port, () => console.log(`listening on port ${port}`));
 
 server.get('/', (req, res) => {
-    res.send(availableIngredients);
+    res.send({
+        availableIngredients: availableIngredients,
+        cocktailCandidates: groupCocktailCandidates(availableIngredients, cocktailLookup)
+    });
 });
 
 server.get('/dingdong', (req, res) => {
     res.send({
         availableIngredients: availableIngredients,
-        cocktailCandidates: groupCocktailCandidates(availableIngredients, cocktailLookup),
         availableCocktails: filterAvailableCocktails(availableIngredients, cocktailLookup)
     });
 });
@@ -60,7 +62,6 @@ server.get('/dingdong/:ingredient', (req, res) => {
     let extendedIngredients = availableIngredients.concat([req.params.ingredient]);
     res.send( {
         availableIngredients: extendedIngredients,
-        cocktailCandidates: groupCocktailCandidates(extendedIngredients, cocktailLookup),
         availableCocktails: filterAvailableCocktails(extendedIngredients, cocktailLookup)
     });
 });
