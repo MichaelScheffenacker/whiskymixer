@@ -76,7 +76,7 @@ server.get('/dingdong/:ingredient', (req, res) => {
 
 });
 
-server.get('/changeDate', (req, res) => {
+server.get('/changedate', (req, res) => {
     fetchAvailableIngredients(() =>
         res.send({
             availableIngredients: availableIngredients,
