@@ -21,7 +21,8 @@ async function fetchAvailableIngredients() {
 
 async function fetchAllIngredients() {
     try {
-        allIngredients = await dataAccess.fetchMixerData(settings.fetchPaths.allIngredients);
+        let allIngredientsRaw = await dataAccess.fetchMixerData(settings.fetchPaths.allIngredients);
+        allIngredients = allIngredientsRaw.map(ingredient => ingredient.name);
     } catch (error) {
         console.error(error);
     }
@@ -61,11 +62,17 @@ server.get('/dingdong', (req, res) => {
 });
 
 server.get('/dingdong/:ingredient', (req, res) => {
-    let extendedIngredients = availableIngredients.concat([req.params.ingredient]);
-    res.send( {
-        availableIngredients: extendedIngredients,
-        availableCocktails: filterAvailableCocktails(extendedIngredients, cocktailLookup)
-    });
+    let newIngredient = req.params.ingredient;
+    if (allIngredients.includes(newIngredient)) {
+        let extendedIngredients = availableIngredients.concat([newIngredient]);
+        res.send( {
+            availableIngredients: extendedIngredients,
+            availableCocktails: filterAvailableCocktails(extendedIngredients, cocktailLookup)
+        });
+    } else {
+        res.status(400).send('Ingredient not included');
+    }
+
 });
 
 server.get('/askfriend', (req, res) => {
