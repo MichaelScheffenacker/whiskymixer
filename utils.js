@@ -26,9 +26,8 @@ module.exports = {
     },
     filterAvailableCocktails: (availableIngredients, cocktailLookup) => {
         let cocktailSubset = module.exports.groupCocktailCandidates(availableIngredients, cocktailLookup);
-        let availableCocktails = cocktailSubset.filter(cocktail =>
-            cocktail.ingredients.every(ingredient => availableIngredients.includes(ingredient))
-        )
-        return availableCocktails;
+        let areAllIngredientsAvailableForCocktail = cocktail =>
+            cocktail.ingredients.every(ingredient => availableIngredients.includes(ingredient));
+        return cocktailSubset.filter(areAllIngredientsAvailableForCocktail);
     }
 };
