@@ -6,8 +6,6 @@ const server = express();
 
 const port = settings.port;
 
-// server.use(express.static('static'));
-
 let availableIngredients = [];
 let allIngredients = [];
 let cocktailLookup = [];
@@ -49,7 +47,9 @@ server.listen(port, () => console.log(`listening on port ${port}`));
 server.get('/', (req, res) => {
     res.send({
         availableIngredients: availableIngredients,
-        cocktailCandidates: groupCocktailCandidates(availableIngredients, cocktailLookup)
+        cocktailCandidates: groupCocktailCandidates(availableIngredients, cocktailLookup),
+        cocktails: cocktails,
+        allIngredients: allIngredients
     });
 });
 
