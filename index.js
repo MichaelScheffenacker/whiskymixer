@@ -11,9 +11,10 @@ let allIngredients = [];
 let cocktailLookup = [];
 let cocktails = [];
 
-async function fetchAvailableIngredients() {
+async function fetchAvailableIngredients(callback) {
     try {
         availableIngredients = await dataAccess.fetchMixerData(settings.fetchPaths.availableIngredients);
+        callback()
     } catch (error) {
         console.error(error);
     }
@@ -38,7 +39,7 @@ async function fetchCocktails(callback) {
     }
 }
 
-fetchAvailableIngredients();
+fetchAvailableIngredients(() => {});
 fetchAllIngredients();
 fetchCocktails(() => {});
 
@@ -73,6 +74,15 @@ server.get('/dingdong/:ingredient', (req, res) => {
         res.status(400).send('Ingredient not included');
     }
 
+});
+
+server.get('/changeDate', (req, res) => {
+    fetchAvailableIngredients(() =>
+        res.send({
+            availableIngredients: availableIngredients,
+            availableCocktails: filterAvailableCocktails(availableIngredients, cocktailLookup)
+        })
+    );
 });
 
 server.get('/askfriend', (req, res) => {
